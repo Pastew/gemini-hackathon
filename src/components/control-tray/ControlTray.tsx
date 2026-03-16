@@ -659,19 +659,30 @@ function ControlTray({
       );
       if (searchFc) {
         const { query } = searchFc.args as any;
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-        setToastMessage(`Searching Google for: "${query}"`);
-        chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-          if (tab?.id) chrome.tabs.update(tab.id, { url: searchUrl });
-        });
-        setTimeout(() => setToastMessage(null), 4000);
-        client.sendToolResponse({
-          functionResponses: [{
-            id: searchFc.id,
-            name: searchFc.name,
-            response: { output: { success: true, query, url: searchUrl } },
-          }],
-        });
+        
+        if (query === "undefined" || !query) {
+          client.sendToolResponse({
+            functionResponses: [{
+              id: searchFc.id,
+              name: searchFc.name,
+              response: { output: { success: false, error: "Invalid search query" } },
+            }],
+          });
+        } else {
+          const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+          setToastMessage(`Searching Google for: "${query}"`);
+          chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+            if (tab?.id) chrome.tabs.update(tab.id, { url: searchUrl });
+          });
+          setTimeout(() => setToastMessage(null), 4000);
+          client.sendToolResponse({
+            functionResponses: [{
+              id: searchFc.id,
+              name: searchFc.name,
+              response: { output: { success: true, query, url: searchUrl } },
+            }],
+          });
+        }
       }
 
       // --- youtube_search ---
