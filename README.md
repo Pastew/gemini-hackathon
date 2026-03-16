@@ -6,6 +6,10 @@
 [](https://www.google.com/search?q=https://youtu.be/YOUR_VIDEO_ID)
 *(Click to watch the 2-minute demo)*
 
+## 🏗️ Architecture
+
+![GemiNav AI System Architecture](./diagram.PNG)
+
 ## 💡 The Problem & My Solution
 
 **The Problem:** Most AI browser extensions are trapped in a chat box. They require constant copy-pasting. If you ask them to actually *do* something on the page, they hallucinate coordinates and fail. They are passive text generators, not active assistants.
