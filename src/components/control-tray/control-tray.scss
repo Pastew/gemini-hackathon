@@ -1,0 +1,264 @@
+.control-tray.vertical-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 24px;
+  background-color: #0d1117; // Clean dark mockup background
+  box-sizing: border-box; // Fixes the right-margin cutoff bug
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Colorful neon frame (matches mockup)
+  &::after {
+    content: "";
+    position: fixed;
+    top: 6px;
+    bottom: 6px;
+    left: max(6px, calc(50% - 204px));
+    right: max(6px, calc(50% - 204px));
+    border-radius: 24px;
+    padding: 2px;
+    background: linear-gradient(to bottom right, #00F0FF, #FF00FF);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  // ZONE 1: The Iris Visualizer
+  .zone-iris {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  // ZONE 2: Primary Action
+  .zone-primary-action {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .connect-btn {
+      width: 100%;
+      height: 36px; // 2x smaller (originally 56px)
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px; // scaled down typography
+      font-weight: 700;
+      border: none;
+      background: #00F0FF;
+      color: #050505;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+
+      &:hover {
+        background: #33F3FF;
+        box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+      }
+
+      &.connected {
+        background: transparent;
+        border: 1px solid rgba(255, 0, 60, 0.5);
+        color: #FF003C;
+        box-shadow: 0 0 15px rgba(255, 0, 60, 0.1);
+
+        &:hover {
+          background: rgba(255, 0, 60, 0.1);
+          box-shadow: 0 0 25px rgba(255, 0, 60, 0.3);
+        }
+      }
+    }
+  }
+
+  // ZONE 3: Utility Grid
+  .actions-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+
+
+
+
+    }
+
+    .grid-button {
+      --theme-rgb: 0, 240, 255; // Default Cyan (Mic changes this based on active/muted states)
+      --theme-color: #00F0FF;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;              // tighter internal gap for the small box
+      width: 72px;           // Strict uniform small width
+      height: 72px !important; // Strict uniform small height
+      flex-shrink: 0;        // Prevent flexbox from squeezing them
+      border-radius: 20px; 
+      border: 1px solid rgba(var(--theme-rgb), 0.15);
+      background: rgba(var(--theme-rgb), 0.03);
+      color: var(--theme-color);
+      box-shadow: inset 0 0 12px rgba(var(--theme-rgb), 0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+
+      .material-symbols-outlined {
+        font-size: 32px;
+        transition: transform 0.2s ease;
+      }
+
+      .label {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      &:hover {
+        background: rgba(var(--theme-rgb), 0.1);
+        border-color: rgba(var(--theme-rgb), 0.3);
+        box-shadow: 0 0 15px rgba(var(--theme-rgb), 0.15);
+        
+        .material-symbols-outlined {
+          transform: scale(1.1);
+        }
+      }
+
+      // Specific Active States
+      &.mic-button {
+        --theme-rgb: 13, 156, 83; // Green-500 baseline (active speaking)
+        --theme-color: #0d9c53;
+        
+        position: relative;
+        z-index: 1;
+
+        // Animate the button's overall background based on volume
+        // We use the new unitless `--mic-volume` instead of `--volume` (which was a px string)
+        background-color: rgba(var(--theme-rgb), calc(0.1 + var(--mic-volume) * 0.4));
+        box-shadow: 
+           inset 0 0 12px rgba(var(--theme-rgb), calc(0.1 + var(--mic-volume) * 0.3)),
+           0 0 calc(var(--mic-volume) * 20px) rgba(var(--theme-rgb), calc(var(--mic-volume) * 0.3));
+        transition: background-color 0.05s ease-out, box-shadow 0.05s ease-out;
+
+        .material-symbols-outlined {
+           transition: none;
+        }
+
+        &.muted {
+          --theme-rgb: 255, 0, 60; // Red muted state
+          --theme-color: #FF003C;
+          
+          color: #FF003C;
+          border-color: rgba(255, 0, 60, 0.4);
+          background: rgba(255, 0, 60, 0.1) !important; // override volume calc
+          box-shadow: inset 0 0 15px rgba(255, 0, 60, 0.1) !important;
+        }
+      }
+
+      // Active streaming state overrides for the generic MediaStream buttons
+      &.active-stream {
+         background: rgba(var(--theme-rgb), 0.2);
+         border-color: rgba(var(--theme-rgb), 0.5);
+         box-shadow: 0 0 20px rgba(var(--theme-rgb), 0.25);
+      }
+
+      &.translator-active,
+      &.smart-links-active,
+      &.active {
+        --theme-rgb: 13, 156, 83; // Green active state
+        --theme-color: #0d9c53;
+        background: rgba(var(--theme-rgb), 0.2);
+        border-color: rgba(var(--theme-rgb), 0.5);
+        box-shadow: 0 0 20px rgba(var(--theme-rgb), 0.25);
+      }
+
+      &.off {
+        --theme-rgb: 255, 0, 60; // Red off state
+        --theme-color: #FF003C;
+        background: rgba(var(--theme-rgb), 0.1);
+        border-color: rgba(var(--theme-rgb), 0.4);
+        box-shadow: inset 0 0 15px rgba(var(--theme-rgb), 0.1);
+      }
+    }
+  }
+
+  // ZONE 4: Video Preview
+  .zone-preview {
+    width: 100%;
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;    // Allow it to stretch to the bottom
+    min-height: 0;   // Allow it to shrink if needed
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    .stream {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 16px;
+      object-fit: contain;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      &.hidden {
+        display: none;
+      }
+    }
+  }
+
+  // Footer / Settings
+  .zone-footer {
+    width: 100%;
+    margin-top: auto; // Pushes it to the bottom if container is taller than content
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 16px;
+  }
+
+  .vision-toast {
+    position: absolute;
+    bottom: 80px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

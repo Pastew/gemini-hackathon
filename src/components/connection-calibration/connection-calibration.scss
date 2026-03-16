@@ -1,0 +1,180 @@
+.connection-calibration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  color: #00f3ff;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+  }
+
+  .glitch-container {
+    position: relative;
+    margin-bottom: 2rem;
+
+    .glitch-text {
+      font-size: 2.2rem; // Slightly smaller for narrow view
+      font-weight: 900;
+      text-transform: uppercase;
+      position: relative;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 
+        2px 0 #ff00ff,
+        -2px 0 #00ffff;
+      animation: glitch 1s infinite linear alternate-reverse;
+
+      &::before, &::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0a0c;
+      }
+
+      &::before {
+        left: 2px;
+        text-shadow: -2px 0 #ff00ff;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+
+      &::after {
+        left: -2px;
+        text-shadow: -2px 0 #00ffff;
+        clip: rect(12px, 450px, 34px, 0);
+        animation: glitch-anim-2 1s infinite linear alternate-reverse;
+      }
+    }
+  }
+
+  .data-grid {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    .grid-cell {
+      width: 10px;
+      height: 10px;
+      background: #00f3ff;
+      opacity: 0.3;
+
+      &.pulse-1 { animation: cell-pulse 1s infinite; }
+      &.pulse-2 { animation: cell-pulse 1s infinite 0.3s; }
+      &.pulse-3 { animation: cell-pulse 1s infinite 0.6s; }
+    }
+  }
+
+  .status-container {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 183, 0, 0.2); // Matching amber theme accent
+    background: rgba(255, 183, 0, 0.05);
+    min-width: 240px;
+
+    .status-message {
+      font-size: 1rem;
+      letter-spacing: 1px;
+      color: #ffb700; // Using the amber for status to link to error UI
+
+      .cursor {
+        animation: blink 0.8s infinite;
+      }
+    }
+  }
+
+  .loading-bar {
+    width: 200px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+    position: relative;
+    
+    .loading-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #ffb700;
+      box-shadow: 0 0 10px #ffb700;
+      animation: fill 2s infinite ease-in-out;
+    }
+  }
+
+  .connection-details {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.7rem;
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+
+      .label {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      
+      .value {
+        font-weight: bold;
+        &.cyan { color: #00f3ff; }
+        &.lime { color: #39ff14; }
+      }
+    }
+  }
+
+  .background-noise {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.05;
+    pointer-events: none;
+  }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) scale(1); }
+  20% { transform: translate(-2px, 2px) scale(0.99); }
+  40% { transform: translate(-2px, -2px) scale(1.01); }
+  100% { transform: translate(0) scale(1); }
+}
+
+@keyframes cell-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fill {
+  0% { width: 0; left: 0; }
+  50% { width: 100%; left: 0; }
+  100% { width: 0; left: 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
