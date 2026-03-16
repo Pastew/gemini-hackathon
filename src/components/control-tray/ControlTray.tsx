@@ -585,21 +585,43 @@ function ControlTray({
       }
 
       // --- toggle_explain ---
-      const toggleTranslatorFc = toolCall.functionCalls.find(
-        (fc) => fc.name === TOOL_NAMES.TOGGLE_EXPLAIN
+      // --- show_explain_mode ---
+      const showExplainFc = toolCall.functionCalls.find(
+        (fc) => fc.name === TOOL_NAMES.SHOW_EXPLAIN_MODE
       );
-      if (toggleTranslatorFc) {
-        const { enable } = toggleTranslatorFc.args as any;
-        setIsTranslatorActive(enable);
+      if (showExplainFc) {
+        setIsTranslatorActive(true);
         chrome.runtime.sendMessage(
-          { type: CHROME_MESSAGES.TRANSLATOR_TOGGLE, enable },
+          { type: CHROME_MESSAGES.TRANSLATOR_TOGGLE, enable: true },
           (result) => {
-            setToastMessage(enable ? "🌐 Translator Mode ON (Voice)" : "Translator Mode OFF (Voice)");
+            setToastMessage("🌐 Explain Mode ON (Voice)");
             setTimeout(() => setToastMessage(null), 3000);
             client.sendToolResponse({
               functionResponses: [{
-                id: toggleTranslatorFc.id,
-                name: toggleTranslatorFc.name,
+                id: showExplainFc.id,
+                name: showExplainFc.name,
+                response: { output: result ?? { success: false } },
+              }],
+            });
+          }
+        );
+      }
+
+      // --- hide_explain_mode ---
+      const hideExplainFc = toolCall.functionCalls.find(
+        (fc) => fc.name === TOOL_NAMES.HIDE_EXPLAIN_MODE
+      );
+      if (hideExplainFc) {
+        setIsTranslatorActive(false);
+        chrome.runtime.sendMessage(
+          { type: CHROME_MESSAGES.TRANSLATOR_TOGGLE, enable: false },
+          (result) => {
+            setToastMessage("Explain Mode OFF (Voice)");
+            setTimeout(() => setToastMessage(null), 3000);
+            client.sendToolResponse({
+              functionResponses: [{
+                id: hideExplainFc.id,
+                name: hideExplainFc.name,
                 response: { output: result ?? { success: false } },
               }],
             });

@@ -103,15 +103,14 @@ export const GENERIC_TOOLS: FunctionDeclaration[] = [
         parameters: { type: Type.OBJECT, properties: {} },
     },
     {
-        name: TOOL_NAMES.TOGGLE_EXPLAIN,
-        description: 'Toggles the "Explain Mode" feature on or off. When enabled, any text the user selects/highlights on a webpage will be automatically explained or translated in their preferred language. Use this when the user asks to "turn on explain mode", "explain this", "translate this page", etc.',
-        parameters: {
-            type: Type.OBJECT,
-            properties: {
-                enable: { type: Type.BOOLEAN, description: 'True to enable Explain Mode, False to disable.' },
-            },
-            required: ['enable'],
-        },
+        name: TOOL_NAMES.SHOW_EXPLAIN_MODE,
+        description: 'Enables "Explain Mode". When active, any text the user selects with their mouse will be automatically explained or translated. This feature is PERSISTENT and will remain active across pages. Do NOT turn it off unless explicitly asked.',
+        parameters: { type: Type.OBJECT, properties: {} },
+    },
+    {
+        name: TOOL_NAMES.HIDE_EXPLAIN_MODE,
+        description: 'Disables "Explain Mode". Use this when the user says "stop explaining", "turn off translator", or "cancel explain mode".',
+        parameters: { type: Type.OBJECT, properties: {} },
     },
     {
         name: TOOL_NAMES.TYPE_TEXT,
