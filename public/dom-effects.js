@@ -353,33 +353,29 @@ export function executeAction(args) {
         });
 
         // Filter out invisible elements
-        var visibleEls = [];
+        var visibleCount = 0;
         els.forEach(function (el) {
             var rect = el.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
+            if (rect.width > 2 && rect.height > 2) {
                 var style = window.getComputedStyle(el);
                 if (style.visibility !== 'hidden' && style.opacity !== '0') {
-                    visibleEls.push(el);
+                    visibleCount++;
+                    var labelId = visibleCount;
+                    window.__wn_smart_links[labelId] = el;
+
+                    var absX = window.scrollX + rect.left;
+                    var absY = window.scrollY + rect.top;
+
+                    var tag = document.createElement("div");
+                    tag.className = "wn-smart-link-tag";
+                    // position tag at top-left of the element
+                    tag.style.left = absX + "px";
+                    tag.style.top = absY + "px";
+                    tag.textContent = labelId;
+
+                    wrap.appendChild(tag);
                 }
             }
-        });
-
-        visibleEls.forEach(function (el, index) {
-            var labelId = index + 1;
-            window.__wn_smart_links[labelId] = el;
-
-            var rect = el.getBoundingClientRect();
-            var absX = window.scrollX + rect.left;
-            var absY = window.scrollY + rect.top;
-
-            var tag = document.createElement("div");
-            tag.className = "wn-smart-link-tag";
-            // position tag at top-left of the element
-            tag.style.left = absX + "px";
-            tag.style.top = absY + "px";
-            tag.textContent = labelId;
-
-            wrap.appendChild(tag);
         });
 
         document.body.appendChild(wrap);

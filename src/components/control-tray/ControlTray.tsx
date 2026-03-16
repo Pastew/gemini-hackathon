@@ -222,22 +222,21 @@ function ControlTray({
     localStorage.setItem(STORAGE_KEYS.SMARTLINKS_ACTIVE, isSmartLinksActive.toString());
   }, [isSmartLinksActive, STORAGE_KEYS.SMARTLINKS_ACTIVE]);
 
-  // Sync background state on mount & maintain heartbeat port
+  // ── Port Management: Maintain sidepanel alive status ───────────────────────
   useEffect(() => {
-    // Establishing a port allows the background script to detect when the panel is closed
+    // Establishing a port once allows the background script to detect when the panel is closed.
     const port = chrome.runtime.connect({ name: "sidepanel" });
+    return () => port.disconnect();
+  }, []);
 
-    if (isTranslatorActive) {
-      chrome.runtime.sendMessage({ type: CHROME_MESSAGES.TRANSLATOR_TOGGLE, enable: true });
-    }
-    if (isSmartLinksActive) {
-      chrome.runtime.sendMessage({ type: CHROME_MESSAGES.TOGGLE_SMART_LINKS, enable: true });
-    }
+  // ── State Sync: Notify background when modes change ─────────────────────────
+  useEffect(() => {
+    chrome.runtime.sendMessage({ type: CHROME_MESSAGES.TRANSLATOR_TOGGLE, enable: isTranslatorActive });
+  }, [isTranslatorActive]);
 
-    return () => {
-      port.disconnect();
-    };
-  }, [isSmartLinksActive, isTranslatorActive]);
+  useEffect(() => {
+    chrome.runtime.sendMessage({ type: CHROME_MESSAGES.TOGGLE_SMART_LINKS, enable: isSmartLinksActive });
+  }, [isSmartLinksActive]);
 
   // Always auto-reconnect whenever disconnected
   useEffect(() => {
@@ -541,22 +540,43 @@ function ControlTray({
         );
       }
 
-      // --- toggle_smart_links ---
-      const toggleSmartLinksFc = toolCall.functionCalls.find(
-        (fc) => fc.name === TOOL_NAMES.TOGGLE_SMART_LINKS
+      // --- show_smart_links ---
+      const showSmartLinksFc = toolCall.functionCalls.find(
+        (fc) => fc.name === TOOL_NAMES.SHOW_SMART_LINKS
       );
-      if (toggleSmartLinksFc) {
-        const { enable } = toggleSmartLinksFc.args as any;
-        setIsSmartLinksActive(enable);
+      if (showSmartLinksFc) {
+        setIsSmartLinksActive(true);
         chrome.runtime.sendMessage(
-          { type: CHROME_MESSAGES.TOGGLE_SMART_LINKS, enable },
+          { type: CHROME_MESSAGES.TOGGLE_SMART_LINKS, enable: true },
           (result) => {
-            setToastMessage(enable ? "🏷️ Smart Links ON (Voice)" : "Smart Links OFF (Voice)");
+            setToastMessage("🏷️ Smart Links ON (Voice)");
             setTimeout(() => setToastMessage(null), 3000);
             client.sendToolResponse({
               functionResponses: [{
-                id: toggleSmartLinksFc.id,
-                name: toggleSmartLinksFc.name,
+                id: showSmartLinksFc.id,
+                name: showSmartLinksFc.name,
+                response: { output: result ?? { success: false } },
+              }],
+            });
+          }
+        );
+      }
+
+      // --- hide_smart_links ---
+      const hideSmartLinksFc = toolCall.functionCalls.find(
+        (fc) => fc.name === TOOL_NAMES.HIDE_SMART_LINKS
+      );
+      if (hideSmartLinksFc) {
+        setIsSmartLinksActive(false);
+        chrome.runtime.sendMessage(
+          { type: CHROME_MESSAGES.TOGGLE_SMART_LINKS, enable: false },
+          (result) => {
+            setToastMessage("Smart Links OFF (Voice)");
+            setTimeout(() => setToastMessage(null), 3000);
+            client.sendToolResponse({
+              functionResponses: [{
+                id: hideSmartLinksFc.id,
+                name: hideSmartLinksFc.name,
                 response: { output: result ?? { success: false } },
               }],
             });

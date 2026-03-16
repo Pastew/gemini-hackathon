@@ -40,16 +40,19 @@ chrome.runtime.onConnect.addListener((port) => {
     console.log("[WebNavigator] Side panel connected.");
 
     port.onDisconnect.addListener(() => {
-      console.log("[WebNavigator] Side panel closed — disarming features.");
-      smartLinksActive = false;
-      translatorActive = false;
+      // ONLY disarm if the port name matches. We check this to be safe.
+      if (port.name === "sidepanel") {
+        console.log("[WebNavigator] Side panel closed — disarming features.");
+        smartLinksActive = false;
+        translatorActive = false;
 
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        if (tab?.id) {
-          updateSmartLinksOnTab(tab.id);
-          removeTranslatorListener(tab.id);
-        }
-      });
+        chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+          if (tab?.id) {
+            updateSmartLinksOnTab(tab.id);
+            removeTranslatorListener(tab.id);
+          }
+        });
+      }
     });
   }
 });
@@ -276,15 +279,17 @@ function removeTranslatorListener(tabId) {
   }).catch(() => { /* restricted page — ignore */ });
 }
 
-// Re-inject when user switches to a different tab
+// ── Global Tab Listeners ─────────────────────────────────────────────────────
+
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   if (translatorActive) injectTranslatorListener(tabId);
+  if (smartLinksActive) updateSmartLinksOnTab(tabId);
 });
 
-// Re-inject when a page finishes loading (navigation / refresh)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (translatorActive && changeInfo.status === "complete") {
-    injectTranslatorListener(tabId);
+  if (changeInfo.status === "complete") {
+    if (translatorActive) injectTranslatorListener(tabId);
+    if (smartLinksActive) updateSmartLinksOnTab(tabId);
   }
 });
 
@@ -299,14 +304,4 @@ function updateSmartLinksOnTab(tabId) {
     args: [{ action: smartLinksActive ? "show_smart_links" : "hide_smart_links" }],
   }).catch(() => { /* restricted page — ignore */ });
 }
-
-chrome.tabs.onActivated.addListener(({ tabId }) => {
-  if (smartLinksActive) updateSmartLinksOnTab(tabId);
-});
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (smartLinksActive && changeInfo.status === "complete") {
-    updateSmartLinksOnTab(tabId);
-  }
-});
 

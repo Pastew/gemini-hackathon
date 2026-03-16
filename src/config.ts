@@ -93,15 +93,14 @@ export const GENERIC_TOOLS: FunctionDeclaration[] = [
         },
     },
     {
-        name: TOOL_NAMES.TOGGLE_SMART_LINKS,
-        description: 'Toggles the "Smart Links" feature on or off. Smart Links overlays numerical tags on all clickable elements on the webpage to make them easier to click. Use this when the user asks to "turn on smart links", "show numbers", etc.',
-        parameters: {
-            type: Type.OBJECT,
-            properties: {
-                enable: { type: Type.BOOLEAN, description: 'True to enable Smart Links, False to disable.' },
-            },
-            required: ['enable'],
-        },
+        name: TOOL_NAMES.SHOW_SMART_LINKS,
+        description: 'Enables the "Smart Links" feature. This overlays numerical tags on all clickable elements to make navigation easy. This feature is PERSISTENT and will remain active across pages. Do NOT turn it off unless explicitly asked.',
+        parameters: { type: Type.OBJECT, properties: {} },
+    },
+    {
+        name: TOOL_NAMES.HIDE_SMART_LINKS,
+        description: 'Disables the "Smart Links" feature and removes all numerical tags from the screen. Use this when the user says "hide numbers", "stop smart links", or "clear the labels".',
+        parameters: { type: Type.OBJECT, properties: {} },
     },
     {
         name: TOOL_NAMES.TOGGLE_EXPLAIN,
