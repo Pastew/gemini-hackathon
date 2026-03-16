@@ -3,7 +3,7 @@
 > **Don't just chat with the web. Command it.**
 > GemiNav AI is an easily installable Chrome extension that lives in your side panel. With just one click to activate, it becomes a real-time, voice-operated agent that **can see** your active tab, **can watch** you through your webcam, **hears** your voice, and **acts** directly on your browser.
 
-[](https://www.google.com/search?q=https://youtu.be/YOUR_VIDEO_ID)
+[![GemiNav AI Demo](https://img.youtube.com/vi/VJlUh_3kxOY/0.jpg)](https://youtu.be/VJlUh_3kxOY)
 *(Click to watch the 2-minute demo)*
 
 ## 🏗️ Architecture
@@ -59,16 +59,30 @@ What the Agent can execute on your behalf:
 
 ## 🛠️ Part 2: How to Install & Run
 
-I optimized the setup process so you can test GemiNav AI in under a minute without building from source.
+### 1. Build from Source
 
-### 1. Install the Extension
+```bash
+# 1. Clone the repository
+git clone https://github.com/Pastew/gemini-hackathon.git
+cd gemini-hackathon
 
-1. Download the `geminav-release.zip` file from the [Releases](https://www.google.com/search?q=%23) tab.
-2. Extract the `.zip` file to a folder on your computer.
-3. Open Chrome and navigate to `chrome://extensions/`.
-4. Toggle on **"Developer mode"** in the top right corner.
-5. Click **"Load unpacked"** and select the extracted folder.
-6. Pin the GemiNav extension to your toolbar and click it to open the Side Panel.
+# 2. Install dependencies
+npm install
+
+# 3. Copy and configure environment variables
+cp .env.example .env
+# Edit .env with your settings (API key or proxy URL)
+
+# 4. Build the extension
+npm run build
+```
+
+Then load the extension in Chrome:
+
+1. Open `chrome://extensions/`
+2. Toggle on **"Developer mode"** in the top right corner
+3. Click **"Load unpacked"** and select the `build/` folder
+4. Pin GemiNav to your toolbar and click it to open the Side Panel
 
 ### 2. Connection Modes & High Availability
 
